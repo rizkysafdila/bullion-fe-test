@@ -1,3 +1,4 @@
+/* eslint-disable node/prefer-global/process */
 import tailwindcss from '@tailwindcss/vite'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -21,6 +22,10 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-07-16',
 
+  colorMode: {
+    preference: 'light',
+  },
+
   eslint: {
     config: {
       standalone: false,
@@ -31,5 +36,12 @@ export default defineNuxtConfig({
     public: {
       apiBaseUrl: process.env.API_BASE_URL,
     },
+  },
+
+  imports: {
+    dirs: [
+      'constants',
+      'types',
+    ],
   },
 })

@@ -2,13 +2,28 @@ export default defineAppConfig({
   // https://ui.nuxt.com/getting-started/theme#design-system
   ui: {
     colors: {
-      primary: 'emerald',
+      primary: 'flamingo',
+      secondary: 'coral-blue',
       neutral: 'slate',
     },
+    formField: {
+      slots: {
+        label: 'font-semibold',
+      },
+    },
     button: {
-      defaultVariants: {
-        // Set default button color to neutral
-        // color: 'neutral'
+      slots: {
+        base: 'cursor-pointer',
+      },
+    },
+    select: {
+      slots: {
+        base: 'cursor-pointer',
+      },
+    },
+    selectMenu: {
+      slots: {
+        base: 'cursor-pointer',
       },
     },
   },
