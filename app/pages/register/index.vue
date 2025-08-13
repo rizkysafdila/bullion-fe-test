@@ -27,6 +27,11 @@ async function handleRegister(data: any) {
 
 <template>
   <div class="flex flex-1 justify-center">
-    <AuthRegisterForm :loading="loading" @submit="handleRegister" />
+    <div>
+      <h1 class="font-bold text-3xl mb-8">
+        Daftar
+      </h1>
+      <AuthRegisterForm color="secondary" :loading="loading" @submit="handleRegister" />
+    </div>
   </div>
 </template>

@@ -1,13 +1,18 @@
 <script lang="ts" setup>
 import type { FormSubmitEvent } from '@nuxt/ui'
+import type { IDetailedUser } from '~~/layers/users/app/types/user'
 import * as z from 'zod'
 
-defineProps<{
+const props = withDefaults(defineProps<{
   loading?: boolean
-}>()
+  data?: IDetailedUser
+  color?: 'primary' | 'secondary' | 'error' | 'success' | 'info' | 'warning' | 'neutral'
+}>(), {
+  color: 'primary',
+})
 
 const emit = defineEmits<{
-  (e: 'submit', data: Schema): void
+  (e: 'submit', data: FormData): void
 }>()
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
@@ -44,32 +49,36 @@ const schema = z.object({
 type Schema = z.output<typeof schema>
 
 const state = reactive<Partial<Schema>>({
-  first_name: '',
-  last_name: '',
-  gender: '',
-  date_of_birth: '',
-  email: '',
-  phone: '',
-  address: '',
-  photo: undefined,
-  password: '',
-  password_confirm: '',
+  first_name: props.data?.first_name ?? '',
+  last_name: props.data?.last_name ?? '',
+  gender: props.data?.gender ?? '',
+  date_of_birth: props.data?.date_of_birth ?? '',
+  email: props.data?.email ?? '',
+  phone: props.data?.phone ?? '',
+  address: props.data?.address ?? '',
+  // photo: props.data?.photo ?? undefined,
+  // password: props.data ?? '',
+  // password_confirm: props.data ?? '',
 })
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  const data = {
-    ...event.data,
-    password: await hashPassword(event.data.password),
+  const formData = new FormData()
+
+  for (const [key, value] of Object.entries(event.data)) {
+    if (key === 'password') {
+      formData.append(key, await hashPassword(value as string))
+    }
+    else {
+      formData.append(key, value as any)
+    }
   }
-  emit('submit', data)
+
+  emit('submit', formData)
 }
 </script>
 
 <template>
   <div class="w-full max-w-[405px]">
-    <h1 class="font-bold text-3xl mb-8">
-      Daftar
-    </h1>
     <UForm
       :state="state"
       :schema="schema"
@@ -81,7 +90,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
           <UInput
             v-model="state.first_name"
             type="text"
-            color="secondary"
+            :color="color"
             name="first_name"
             placeholder="Masukkan nama depan"
             size="lg"
@@ -92,7 +101,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
           <UInput
             v-model="state.last_name"
             type="text"
-            color="secondary"
+            :color="color"
             name="last_name"
             placeholder="Masukkan nama belakang"
             size="lg"
@@ -115,7 +124,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             name="date_of_birth"
             type="date"
             placeholder="Pilih tanggal lahir"
-            color="secondary"
+            :color="color"
             size="lg"
             class="w-full"
           />
@@ -124,7 +133,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
           <UInput
             v-model="state.email"
             type="email"
-            color="secondary"
+            :color="color"
             name="email"
             placeholder="Masukkan email"
             size="lg"
@@ -135,7 +144,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
           <UInput
             v-model="state.phone"
             type="tel"
-            color="secondary"
+            :color="color"
             name="phone"
             placeholder="Masukkan no handphone"
             size="lg"
@@ -146,7 +155,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
           <UInput
             v-model="state.address"
             type="text"
-            color="secondary"
+            :color="color"
             name="address"
             placeholder="Masukkan alamat"
             size="lg"
@@ -154,21 +163,19 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
           />
         </UFormField>
         <UFormField label="Password" name="password">
-          <UInput
+          <InputPassword
             v-model="state.password"
-            type="password"
-            color="secondary"
+            :color="color"
             name="password"
             placeholder="Masukkan password"
             size="lg"
             class="w-full"
           />
         </UFormField>
-        <UFormField label="Password" name="password_confirm">
-          <UInput
+        <UFormField label="Konfirmasi Password" name="password_confirm">
+          <InputPassword
             v-model="state.password_confirm"
-            type="password"
-            color="secondary"
+            :color="color"
             name="password_confirm"
             placeholder="Konfirmasi password"
             size="lg"
@@ -198,7 +205,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
               <UButton
                 label="Hapus"
-                color="error"
+                :color="color"
                 variant="link"
                 size="xs"
                 class="p-0"
@@ -211,7 +218,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       <UButton
         type="submit"
         label="Tambah"
-        color="secondary"
+        :color="color"
         size="lg"
         :loading="loading"
         block

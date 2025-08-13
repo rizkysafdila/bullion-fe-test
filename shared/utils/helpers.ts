@@ -17,3 +17,33 @@ export function formatBytes(bytes: number, decimals = 2) {
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return `${Number.parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`
 }
+
+export function formatDate(dateString: string): string {
+  if (!dateString)
+    return ''
+
+  const date = new Date(dateString)
+  if (Number.isNaN(date.getTime()))
+    return ''
+
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0') // months are 0-based
+  const year = date.getFullYear()
+
+  return `${day}/${month}/${year}`
+}
+
+export function formatDateLong(dateString: string): string {
+  if (!dateString)
+    return ''
+
+  const date = new Date(dateString)
+  if (Number.isNaN(date.getTime()))
+    return ''
+
+  return date.toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}

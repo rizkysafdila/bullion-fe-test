@@ -3,24 +3,24 @@ export const useAuthStore = defineStore('auth', () => {
   const token = useCookie('token')
 
   const login = async (credentials: { email: string, password: string }) => {
-    const { $fetch } = useApi()
-    const res: APIResponse<ILoginResponse> = await $fetch(LOGIN_ENDPOINT, {
+    const { data, pending, error } = await useFetch<ILoginResponse>(LOGIN_ENDPOINT, {
       method: 'POST',
       body: credentials,
     })
-    token.value = res.data.token
-    username.value = res.data.name
+    token.value = data.value?.token
+    username.value = data.value?.name
+
+    return { pending, error }
   }
 
-  // const register = async (data: { name: string, email: string, password: string }) => {
-  //   const { $fetch } = useApi()
-  //   const res: any = await $fetch('/register', {
-  //     method: 'POST',
-  //     body: data,
-  //   })
-  //   token.value = res.data.token
-  //   user.value = res.data.user
-  // }
+  const register = async (data: { name: string, email: string, password: string }) => {
+    const { pending, error } = await useFetch<IRegisterResponse>('/register', {
+      method: 'POST',
+      body: data,
+    })
+
+    return { pending, error }
+  }
 
   const logout = () => {
     token.value = null
@@ -31,7 +31,7 @@ export const useAuthStore = defineStore('auth', () => {
     username,
     token,
     login,
-    // register,
+    register,
     logout,
   }
 })

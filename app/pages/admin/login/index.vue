@@ -10,17 +10,19 @@ const { login } = authStore
 const loading = ref<boolean>(false)
 
 async function handleLogin(data: any) {
-  loading.value = true
-  try {
-    await login(data)
+  const { error, pending } = await login(data)
+
+  watchEffect(() => {
+    loading.value = pending.value
+  })
+
+  if (!pending.value) {
+    toast.add({ title: error.value?.message || 'Login failed', color: 'error' })
+  }
+
+  if (!error.value) {
     toast.add({ title: 'Login successful', color: 'success' })
-    navigateTo('/dashboard/users')
-  }
-  catch (error: any) {
-    toast.add({ title: error?.data?.message || 'Login failed', color: 'error' })
-  }
-  finally {
-    loading.value = false
+    navigateTo('/users')
   }
 }
 </script>

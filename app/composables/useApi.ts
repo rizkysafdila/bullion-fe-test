@@ -1,13 +1,19 @@
-export function useApi() {
-  const config = useRuntimeConfig()
-  const token = useCookie('token')
+import type { UseFetchOptions } from 'nuxt/app'
 
-  const $fetchWithAuth = $fetch.create({
+export function useAPI<T>(
+  url: string | (() => string),
+  options?: UseFetchOptions<T>,
+) {
+  const config = useRuntimeConfig()
+  const token = useCookie<string | null>('token')
+
+  return useFetch(url, {
+    ...options,
     baseURL: config.public.apiBaseUrl,
     headers: {
-      Authorization: token.value ? `Bearer ${token.value}` : '',
+      ...(options?.headers || {}),
+      ...(token.value ? { Authorization: `Bearer ${token.value}` } : {}),
     },
+    $fetch: useNuxtApp().$api as typeof $fetch,
   })
-
-  return { $fetch: $fetchWithAuth }
 }

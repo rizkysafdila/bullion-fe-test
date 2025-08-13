@@ -11,9 +11,19 @@ export default defineAppConfig({
         label: 'font-semibold',
       },
     },
+    badge: {
+      slots: {
+        label: 'mx-auto',
+      },
+    },
     button: {
       slots: {
         base: 'cursor-pointer',
+      },
+    },
+    modal: {
+      slots: {
+        overlay: 'bg-black/50 backdrop-blur-xs',
       },
     },
     select: {
@@ -24,6 +34,13 @@ export default defineAppConfig({
     selectMenu: {
       slots: {
         base: 'cursor-pointer',
+      },
+    },
+    table: {
+      slots: {
+        tr: 'border-b-0',
+        th: 'font-bold',
+        td: 'text-neutral-900',
       },
     },
   },

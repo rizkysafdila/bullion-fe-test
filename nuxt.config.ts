@@ -40,8 +40,9 @@ export default defineNuxtConfig({
 
   imports: {
     dirs: [
-      'constants',
-      'types',
+      'stores/**',
+      'constants/**',
+      'types/**',
     ],
   },
 })
