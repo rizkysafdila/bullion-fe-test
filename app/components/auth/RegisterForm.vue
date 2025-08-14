@@ -92,11 +92,14 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   emit('submit', formData)
 }
 
-watch([props.loading, props.error], (_, error) => {
-  if (!error) {
-    resetForm()
-  }
-})
+watch(
+  () => props.loading,
+  (loading) => {
+    if (!loading) {
+      resetForm()
+    }
+  },
+)
 </script>
 
 <template>

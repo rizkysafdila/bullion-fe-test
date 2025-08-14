@@ -30,10 +30,10 @@ async function editData(id: string) {
   editModal.open({
     data: user.value!,
     onSubmit: async (body) => {
-      const { error, pending } = await updateUser(id, body)
       editModal.patch({
         loading: true,
       })
+      const { error } = await updateUser(id, body)
 
       if (!error.value) {
         editModal.close()
