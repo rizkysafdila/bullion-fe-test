@@ -8,8 +8,8 @@ const emit = defineEmits<{
 
 <template>
   <div class="flex justify-center items-center gap-2">
-    <UButton label="Lihat" icon="tabler:eye" variant="link" @click="emit('show')" />
-    <UButton label="Edit" icon="tabler:edit" variant="link" @click="emit('edit')" />
-    <UButton label="Hapus" icon="tabler:trash" variant="link" @click="emit('delete')" />
+    <UButton label="Lihat" icon="lucide:eye" variant="link" @click="emit('show')" />
+    <UButton label="Edit" icon="lucide:edit" variant="link" @click="emit('edit')" />
+    <UButton label="Hapus" icon="lucide:trash-2" variant="link" @click="emit('delete')" />
   </div>
 </template>

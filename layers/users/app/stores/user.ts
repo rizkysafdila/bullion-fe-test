@@ -19,20 +19,20 @@ export const useUserStore = defineStore('user', () => {
 
   // Actions
   const fetchUserList = async (query?: any) => {
-    const { data, error, pending } = await useAPI<APIResponse<IUser[]>>(GET_USER_LIST_ENDPOINT, {
+    const data = await apiFetchAsyncData<APIResponse<IUser[]>>(GET_USER_LIST_ENDPOINT, {
       method: 'GET',
       query,
     })
-    users.value = data.value?.data as IUser[]
+    users.value = data.data
 
-    return { error, pending }
+    return data
   }
 
   const fetchUserById = async (id: string) => {
-    const { data, error, pending } = await useAPI<APIResponse<IDetailedUser>>(GET_DETAILED_USER_ENDPOINT.replace(':id', id), { method: 'GET' })
-    user.value = data.value?.data as IDetailedUser
+    const data = await apiFetchAsyncData<APIResponse<IDetailedUser>>(GET_DETAILED_USER_ENDPOINT.replace(':id', id), { method: 'GET' })
+    user.value = data.data
 
-    return { error, pending }
+    return data
   }
 
   const createUser = async (body: FormData) => {

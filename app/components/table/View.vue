@@ -56,7 +56,7 @@ function confirmDelete(id: string) {
   deleteModal.open({
     title: 'Anda yakin menghapus data ini?',
     subtitle: 'Data ini tidak dapat dikembalikan setelah dihapus.',
-    icon: 'tabler:trash',
+    icon: 'lucide:trash-2',
     iconClass: 'text-red-500',
     iconBgClass: 'bg-red-100 border-8 border-red-50',
     onSubmit: () => {

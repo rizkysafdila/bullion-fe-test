@@ -18,39 +18,37 @@ const { pending: pendingUserList, refresh } = await useAsyncData(
 )
 
 // Fetch Detailed User
-// const { execute: executeDetailedUser } = await useAsyncData(
-//   'user-detail',
-//   () => fetchUserById(userId.value!),
-//   { immediate: false },
-// )
+const { execute: executeDetailedUser } = await useAsyncData(
+  'user-detail',
+  () => fetchUserById(userId.value!),
+  { immediate: false },
+)
 
-async function handleEditData(id: string) {
-  // userId.value = id
-  const { pending } = await fetchUserById(id)
-  if (!pending.value) {
-    editModal.open({
-      data: user.value!,
-      onSubmit: async (body) => {
-        const { error, pending } = await updateUser(id, body)
-        editModal.patch({
-          loading: true,
-        })
+async function editData(id: string) {
+  userId.value = id
+  await executeDetailedUser()
+  editModal.open({
+    data: user.value!,
+    onSubmit: async (body) => {
+      const { error, pending } = await updateUser(id, body)
+      editModal.patch({
+        loading: true,
+      })
 
-        if (!error.value) {
-          editModal.close()
-          toast.add({ title: 'User updated successfully', color: 'success' })
-        }
-        else {
-          toast.add({ title: 'Failed to update user', color: 'error' })
-        }
+      if (!error.value) {
+        editModal.close()
+        toast.add({ title: 'User updated successfully', color: 'success' })
+      }
+      else {
+        toast.add({ title: 'Failed to update user', color: 'error' })
+      }
 
-        editModal.patch({
-          loading: false,
-        })
-        await refresh()
-      },
-    })
-  }
+      editModal.patch({
+        loading: false,
+      })
+      refresh()
+    },
+  })
 }
 
 async function deleteData(id: string) {
@@ -69,7 +67,7 @@ async function deleteData(id: string) {
       :data="users"
       :loading="pendingUserList"
       :modal-view-form="ModalViewUser"
-      @edit-data="handleEditData"
+      @edit-data="editData"
       @delete-data="deleteData"
     />
   </div>
