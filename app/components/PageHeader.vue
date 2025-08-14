@@ -14,6 +14,7 @@ defineProps<{
       <UButton
         v-if="addButton"
         label="Tambah User"
+        to="/register"
         size="lg"
         class="px-8"
       />

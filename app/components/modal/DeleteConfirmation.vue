@@ -5,6 +5,7 @@ defineProps<{
   icon?: string
   iconClass?: string
   iconBgClass?: string
+  loading?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -49,6 +50,7 @@ const emit = defineEmits<{
             label="Hapus"
             color="error"
             type="submit"
+            :loading="loading"
             block
             @click="emit('submit')"
           />

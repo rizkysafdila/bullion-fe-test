@@ -36,9 +36,6 @@ const overlay = useOverlay()
 const viewModal = props.modalViewForm ? overlay.create(props.modalViewForm) : undefined
 const deleteModal = overlay.create(ModalDeleteConfirmation)
 
-const loading = ref<boolean>(false)
-const searchTimeoutId = ref<any>()
-const search = ref<string>('')
 const page = ref<number>(1)
 
 async function showDetail(id: string) {
@@ -63,38 +60,19 @@ function confirmDelete(id: string) {
     iconClass: 'text-red-500',
     iconBgClass: 'bg-red-100 border-8 border-red-50',
     onSubmit: () => {
+      deleteModal.patch({
+        loading: props.loading,
+      })
       emit('deleteData', id)
       deleteModal.close()
     },
     onClose: () => deleteModal.close(),
   })
 }
-
-watch(search, (value) => {
-  if (searchTimeoutId.value)
-    clearTimeout(searchTimeoutId.value)
-
-  loading.value = true
-  searchTimeoutId.value = setTimeout(() => {
-    emit('searchData', value)
-    loading.value = false
-  }, 1000)
-})
 </script>
 
 <template>
   <div class="bg-white dark:bg-accented p-6 space-y-4 rounded-xl">
-    <div class="flex gap-3">
-      <!-- <UInput
-        v-if="canSearch"
-        v-model="search"
-        class="flex-auto"
-        icon="i-custom-search"
-        :placeholder="`Cari ${title}`"
-        variant="soft"
-        size="sm"
-      /> -->
-    </div>
     <UTable
       :data="data"
       :columns="columns"

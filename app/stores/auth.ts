@@ -15,12 +15,12 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const register = async (data: { name: string, email: string, password: string }) => {
-    const { pending, error } = await useAPI<IRegisterResponse>(REGISTER_ENDPOINT, {
+    const { status, pending, error } = await useAPI<IRegisterResponse>(REGISTER_ENDPOINT, {
       method: 'POST',
       body: data,
     })
 
-    return { pending, error }
+    return { status, pending, error }
   }
 
   const logout = () => {

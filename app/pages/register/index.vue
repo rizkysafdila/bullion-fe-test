@@ -8,17 +8,22 @@ const authStore = useAuthStore()
 const { register } = authStore
 
 const loading = ref<boolean>(false)
+const errorAPI = ref()
 
 async function handleRegister(data: any) {
   loading.value = true
   try {
-    const { error } = await register(data)
+    const { status, error } = await register(data)
 
-    if (!error.value) {
+    watchEffect(() => {
+      errorAPI.value = error.value
+    })
+
+    if (status.value === 'success') {
       toast.add({ title: 'Register berhasil', color: 'success' })
-      navigateTo('/users')
     }
-    else {
+
+    if (error.value) {
       toast.add({ title: 'Register gagal', color: 'error' })
     }
   }
@@ -37,7 +42,12 @@ async function handleRegister(data: any) {
       <h1 class="font-bold text-3xl mb-8">
         Daftar
       </h1>
-      <AuthRegisterForm color="secondary" :loading="loading" @submit="handleRegister" />
+      <AuthRegisterForm
+        color="secondary"
+        :loading="loading"
+        :error="errorAPI"
+        @submit="handleRegister"
+      />
     </div>
   </div>
 </template>

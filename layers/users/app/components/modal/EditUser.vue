@@ -9,7 +9,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'submit', data: FormData): void
+  (e: 'submit', data: Partial<IDetailedUser>): void
 }>()
 
 const schema = z.object({
@@ -18,7 +18,10 @@ const schema = z.object({
   gender: z.string().min(1, 'Gender is required'),
   date_of_birth: z.string().min(1, 'Date of birth is required'),
   email: z.email(),
-  phone: z.string().min(1, 'No. handphone is required').max(15, 'Maximum 15 characters'),
+  phone: z.string().regex(
+    /^(?:\+62|62|0)8\d{7,11}$/,
+    'Invalid phone number. Use format +628xxxxxxxx or 08xxxxxxxx',
+  ),
   address: z.string().min(1, 'Address is required'),
 })
 
@@ -28,25 +31,14 @@ const state = reactive<Partial<Schema>>({
   first_name: props.data?.first_name ?? '',
   last_name: props.data?.last_name ?? '',
   gender: props.data?.gender ?? '',
-  date_of_birth: props.data?.date_of_birth ?? '',
+  date_of_birth: formatDateInput(props.data?.date_of_birth) ?? '',
   email: props.data?.email ?? '',
   phone: props.data?.phone ?? '',
   address: props.data?.address ?? '',
 })
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  const formData = new FormData()
-
-  for (const [key, value] of Object.entries(event.data)) {
-    if (key === 'password') {
-      formData.append(key, await hashPassword(value as string))
-    }
-    else {
-      formData.append(key, value as any)
-    }
-  }
-
-  emit('submit', formData)
+  emit('submit', event.data)
 }
 </script>
 
@@ -145,7 +137,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         </div>
         <UButton
           type="submit"
-          label="Tambah"
+          label="Simpan"
           size="lg"
           :loading="loading"
           block

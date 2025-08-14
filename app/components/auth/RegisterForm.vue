@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import type { FormSubmitEvent } from '@nuxt/ui'
-import type { IDetailedUser } from '~~/layers/users/app/types/user'
 import * as z from 'zod'
 
 const props = withDefaults(defineProps<{
   loading?: boolean
-  data?: IDetailedUser
+  error?: any
   color?: 'primary' | 'secondary' | 'error' | 'success' | 'info' | 'warning' | 'neutral'
 }>(), {
   color: 'primary',
@@ -24,7 +23,11 @@ const schema = z.object({
   gender: z.string().min(1, 'Gender is required'),
   date_of_birth: z.string().min(1, 'Date of birth is required'),
   email: z.email(),
-  phone: z.string().min(1, 'No. handphone is required').max(15, 'Maximum 15 characters'),
+  phone: z.string()
+    .regex(
+      /^(?:\+62|62|0)8\d{7,11}$/,
+      'Invalid phone number. Use format +628xxxxxxxx or 08xxxxxxxx',
+    ),
   address: z.string().min(1, 'Address is required'),
   password: z.string()
     .min(8, 'Password must be at least 8 characters')
@@ -49,17 +52,30 @@ const schema = z.object({
 type Schema = z.output<typeof schema>
 
 const state = reactive<Partial<Schema>>({
-  first_name: props.data?.first_name ?? '',
-  last_name: props.data?.last_name ?? '',
-  gender: props.data?.gender ?? '',
-  date_of_birth: props.data?.date_of_birth ?? '',
-  email: props.data?.email ?? '',
-  phone: props.data?.phone ?? '',
-  address: props.data?.address ?? '',
-  // photo: props.data?.photo ?? undefined,
-  // password: props.data ?? '',
-  // password_confirm: props.data ?? '',
+  first_name: '',
+  last_name: '',
+  gender: '',
+  date_of_birth: '',
+  email: '',
+  phone: '',
+  address: '',
+  photo: undefined,
+  password: '',
+  password_confirm: '',
 })
+
+function resetForm() {
+  state.first_name = ''
+  state.last_name = ''
+  state.gender = ''
+  state.date_of_birth = ''
+  state.email = ''
+  state.phone = ''
+  state.address = ''
+  state.photo = undefined
+  state.password = ''
+  state.password_confirm = ''
+}
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   const formData = new FormData()
@@ -75,6 +91,12 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
   emit('submit', formData)
 }
+
+watch([props.loading, props.error], (_, error) => {
+  if (!error) {
+    resetForm()
+  }
+})
 </script>
 
 <template>

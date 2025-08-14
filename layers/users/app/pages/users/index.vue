@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { ModalEditUser, ModalViewUser } from '#components'
 
+const toast = useToast()
 const userStore = useUserStore()
-const { fetchUserList, fetchUserById, deleteUser } = userStore
+const { fetchUserList, fetchUserById, updateUser, deleteUser } = userStore
 const { users, user } = storeToRefs(userStore)
 
 const userId = ref<string>()
-const loading = ref<boolean>(false)
 
 const overlay = useOverlay()
 const editModal = overlay.create(ModalEditUser)
@@ -18,27 +18,46 @@ const { pending: pendingUserList, refresh } = await useAsyncData(
 )
 
 // Fetch Detailed User
-const { execute: executeDetailedUser } = await useAsyncData(
-  'user-detail',
-  () => fetchUserById(userId.value!),
-  { immediate: false },
-)
+// const { execute: executeDetailedUser } = await useAsyncData(
+//   'user-detail',
+//   () => fetchUserById(userId.value!),
+//   { immediate: false },
+// )
 
 async function handleEditData(id: string) {
-  userId.value = id
-  await executeDetailedUser()
-  editModal.open({
-    data: user.value!,
-    onSubmit: (body) => {
-      // loading.value = true
-      console.log(body)
-    },
-  })
+  // userId.value = id
+  const { pending } = await fetchUserById(id)
+  if (!pending.value) {
+    editModal.open({
+      data: user.value!,
+      onSubmit: async (body) => {
+        const { error, pending } = await updateUser(id, body)
+        editModal.patch({
+          loading: true,
+        })
+
+        if (!error.value) {
+          editModal.close()
+          toast.add({ title: 'User updated successfully', color: 'success' })
+        }
+        else {
+          toast.add({ title: 'Failed to update user', color: 'error' })
+        }
+
+        editModal.patch({
+          loading: false,
+        })
+        await refresh()
+      },
+    })
+  }
 }
 
 async function deleteData(id: string) {
-  await deleteUser(id)
-  refresh()
+  const { pending } = await deleteUser(id)
+  if (!pending.value) {
+    refresh()
+  }
 }
 </script>
 
