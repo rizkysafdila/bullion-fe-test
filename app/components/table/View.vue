@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { TableColumn } from '@nuxt/ui'
 import { ModalDeleteConfirmation, TableAction } from '#components'
+import { getPaginationRowModel } from '@tanstack/vue-table'
 
 const props = defineProps<{
   loading: boolean
@@ -36,7 +37,11 @@ const overlay = useOverlay()
 const viewModal = props.modalViewForm ? overlay.create(props.modalViewForm) : undefined
 const deleteModal = overlay.create(ModalDeleteConfirmation)
 
-const page = ref<number>(1)
+const table = useTemplateRef('table')
+const pagination = ref({
+  pageIndex: 0,
+  pageSize: 5,
+})
 
 async function showDetail(id: string) {
   viewModal?.open({
@@ -74,10 +79,15 @@ function confirmDelete(id: string) {
 <template>
   <div class="bg-white dark:bg-accented p-6 space-y-4 rounded-xl">
     <UTable
+      ref="table"
+      v-model:pagination="pagination"
       :data="data"
       :columns="columns"
       :loading="loading"
       :sticky="true"
+      :pagination-options="{
+        getPaginationRowModel: getPaginationRowModel(),
+      }"
       class="flex-1"
       :ui="{
         tbody: '[&_tr:nth-child(odd)]:bg-primary-50',
@@ -90,15 +100,14 @@ function confirmDelete(id: string) {
     <div class="flex justify-end">
       <UPagination
         variant="soft"
-        active-variant="solid"
-        :default-page="page"
-        :items-per-page="data?.meta?.limit"
-        :total="data?.meta?.total"
+        :default-page="(table?.tableApi?.getState().pagination.pageIndex || 0) + 1"
+        :items-per-page="table?.tableApi?.getState().pagination.pageSize"
+        :total="table?.tableApi?.getFilteredRowModel().rows.length"
         :ui="{
           first: 'hidden',
           last: 'hidden',
         }"
-        @update:page="p => emit('updatePage', p)"
+        @update:page="(p) => table?.tableApi?.setPageIndex(p - 1)"
       >
         <template #prev>
           <UButton label="Previous" color="neutral" variant="ghost" />
