@@ -12,12 +12,18 @@ const loading = ref<boolean>(false)
 async function handleRegister(data: any) {
   loading.value = true
   try {
-    await register(data)
-    toast.add({ title: 'Register successful', color: 'success' })
-    navigateTo('/dashboard/users')
+    const { error } = await register(data)
+
+    if (!error.value) {
+      toast.add({ title: 'Register berhasil', color: 'success' })
+      navigateTo('/users')
+    }
+    else {
+      toast.add({ title: 'Register gagal', color: 'error' })
+    }
   }
   catch (error: any) {
-    toast.add({ title: error?.data?.message || 'Register failed', color: 'error' })
+    toast.add({ title: error?.data?.message || 'Register gagal', color: 'error' })
   }
   finally {
     loading.value = false

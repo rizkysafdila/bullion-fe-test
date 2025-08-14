@@ -113,6 +113,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             v-model="state.gender"
             name="gender"
             placeholder="Pilih jenis kelamin"
+            :color="color"
             size="lg"
             :items="genderItems"
             class="w-full"
@@ -205,7 +206,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
               <UButton
                 label="Hapus"
-                :color="color"
+                color="error"
                 variant="link"
                 size="xs"
                 class="p-0"

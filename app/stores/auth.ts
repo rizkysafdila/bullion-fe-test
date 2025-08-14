@@ -3,18 +3,19 @@ export const useAuthStore = defineStore('auth', () => {
   const token = useCookie('token')
 
   const login = async (credentials: { email: string, password: string }) => {
-    const { data, pending, error } = await useFetch<ILoginResponse>(LOGIN_ENDPOINT, {
+    const { data, pending, error } = await useAPI<APIResponse<ILoginResponse>>(LOGIN_ENDPOINT, {
       method: 'POST',
       body: credentials,
     })
-    token.value = data.value?.token
-    username.value = data.value?.name
+
+    token.value = data.value?.data.token
+    username.value = data.value?.data?.name
 
     return { pending, error }
   }
 
   const register = async (data: { name: string, email: string, password: string }) => {
-    const { pending, error } = await useFetch<IRegisterResponse>('/register', {
+    const { pending, error } = await useAPI<IRegisterResponse>(REGISTER_ENDPOINT, {
       method: 'POST',
       body: data,
     })

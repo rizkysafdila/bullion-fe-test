@@ -10,9 +10,11 @@ export function useAPI<T>(
   return useFetch(url, {
     ...options,
     baseURL: config.public.apiBaseUrl,
-    headers: {
-      ...(options?.headers || {}),
-      ...(token.value ? { Authorization: `Bearer ${token.value}` } : {}),
+    onRequest({ options }) {
+      if (token.value) {
+        // note that this relies on ofetch >= 1.4.0 - you may need to refresh your lockfile
+        options.headers.set('Authorization', `Bearer ${token.value}`)
+      }
     },
     $fetch: useNuxtApp().$api as typeof $fetch,
   })

@@ -19,32 +19,27 @@ export const useUserStore = defineStore('user', () => {
 
   // Actions
   const fetchUserList = async () => {
-    const { data, error, pending } = await useAPI<IUser[]>(GET_USER_LIST_ENDPOINT, { method: 'GET' })
-    users.value = data.value!
+    const { data, error, pending } = await useAPI<APIResponse<IUser[]>>(GET_USER_LIST_ENDPOINT, { method: 'GET' })
+    users.value = data.value?.data as IUser[]
 
     return { error, pending }
   }
 
   const fetchUserById = async (id: string) => {
-    const { data, error, pending } = await useAPI<IDetailedUser>(GET_DETAILED_USER_ENDPOINT.replace(':id', id), { method: 'GET' })
-    user.value = data.value!
+    const { data, error, pending } = await useAPI<APIResponse<IDetailedUser>>(GET_DETAILED_USER_ENDPOINT.replace(':id', id), { method: 'GET' })
+    user.value = data.value?.data as IDetailedUser
 
     return { error, pending }
   }
 
-  // const createUser = async (name: string): Promise<void> => {
-  //   try {
-  //     const res: any = await $fetch('/checklist', {
-  //       method: 'POST',
-  //       body: { name },
-  //     })
-  //     return Promise.resolve(res.data)
-  //   }
-  //   catch (error) {
-  //     console.error('Failed to create user:', error)
-  //     return Promise.reject(error)
-  //   }
-  // }
+  const createUser = async (body: FormData) => {
+    const { error, pending } = await useAPI<APIResponse<IRegisterResponse>>(REGISTER_ENDPOINT, {
+      method: 'POST',
+      body,
+    })
+
+    return { error, pending }
+  }
 
   const updateUser = async (id: string, body: FormData) => {
     const { error, pending } = await useAPI(UPDATE_USER_ENDPOINT.replace(':id', id), {
@@ -64,11 +59,11 @@ export const useUserStore = defineStore('user', () => {
   return {
     fetchUserList,
     fetchUserById,
+    createUser,
     updateUser,
+    deleteUser,
     users,
     user,
     userData,
-    // createUser,
-    deleteUser,
   }
 })

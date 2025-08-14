@@ -1,18 +1,15 @@
 <script setup lang="ts">
-import type { NavigationMenuItem } from '@nuxt/ui'
-
-const links: NavigationMenuItem[][] = [
-  [
-    { label: 'Dashboard', icon: 'i-heroicons-home', to: '/' },
-    { label: 'Users', icon: 'i-heroicons-user-group', to: '/users' },
-    { label: 'Settings', icon: 'i-heroicons-cog-6-tooth', to: '/settings' },
-  ],
-]
-
+const authStore = useAuthStore()
+const { logout } = authStore
 const isSidebarOpen = ref<boolean>(true)
 
 function toggleSidebar() {
   isSidebarOpen.value = !isSidebarOpen.value
+}
+
+function handleLogout() {
+  logout()
+  navigateTo('/admin/login')
 }
 </script>
 
@@ -36,7 +33,7 @@ function toggleSidebar() {
       </div>
 
       <UNavigationMenu
-        :items="links"
+        :items="MENU_LINKS"
         :collapsed="!isSidebarOpen"
         orientation="vertical"
         color="primary"
@@ -61,6 +58,19 @@ function toggleSidebar() {
               {{ item.label }}
             </span>
           </NuxtLink>
+        </template>
+
+        <template #list-trailing>
+          <USeparator />
+          <UButton
+            label="Keluar"
+            icon="lucide:log-out"
+            variant="ghost"
+            color="error"
+            size="lg"
+            class="mt-auto rounded-none w-full px-6 py-3"
+            @click="handleLogout"
+          />
         </template>
       </UNavigationMenu>
     </aside>
